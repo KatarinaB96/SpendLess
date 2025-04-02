@@ -104,6 +104,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W600,
         fontSize = 28.sp,
         lineHeight = 34.sp,
+        letterSpacing = 0.1.sp
     ),
 
     //Display Large
