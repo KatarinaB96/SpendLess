@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SpendLess</string>
+    <string name="settings">Settings</string>
+    <string name="preferences">Preferences</string>
+    <string name="security">Security</string>
+    <string name="logout">Log out</string>
 </resources>
