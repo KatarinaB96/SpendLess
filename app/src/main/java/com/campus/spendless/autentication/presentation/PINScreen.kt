@@ -33,8 +33,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.campus.spendless.R
-import com.campus.spendless.ui.theme.OnPrimaryFixed
-import com.campus.spendless.ui.theme.PrimaryFixed
+import com.campus.spendless.core.ui.theme.OnPrimaryFixed
+import com.campus.spendless.core.ui.theme.PrimaryFixed
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PINScreenRoot(
+) {
+    PINScreen("Create PIN", "Enter your PIN", {}) { }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +114,8 @@ fun PINScreen(
 @Composable
 fun Numbers() {
     Column(
-        modifier = Modifier.widthIn(max = 400.dp)
+        modifier = Modifier
+            .widthIn(max = 400.dp)
             .padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {

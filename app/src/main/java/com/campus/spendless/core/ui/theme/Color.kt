@@ -1,4 +1,4 @@
-package com.campus.spendless.ui.theme
+package com.campus.spendless.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

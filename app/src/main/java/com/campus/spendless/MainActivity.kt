@@ -4,12 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.campus.spendless.autentication.presentation.LoginPINErrorScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import com.campus.spendless.autentication.presentation.PINScreen
-import com.campus.spendless.autentication.presentation.RegistrationScreen
-import com.campus.spendless.ui.theme.SpendLessTheme
+import com.campus.spendless.autentication.presentation.PINScreenRoot
+import com.campus.spendless.autentication.presentation.registration.RegistrationScreenRoot
+import com.campus.spendless.autentication.presentation.registration.RegistrationViewModel
+import com.campus.spendless.core.ui.theme.SpendLessTheme
+import com.campus.spendless.core.utils.Route
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,9 +26,34 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SpendLessTheme {
-                LoginPINErrorScreen("Katarina", "Nono", {}, {}, {}, {}, true)
-//                RegistrationScreen()
-//                CreatePINScreen({}) { }
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.SpendLessGraph
+                ) {
+                    navigation<Route.SpendLessGraph>(startDestination = Route.RegistrationScreen) {
+                        composable<Route.RegistrationScreen>(
+                            exitTransition = { slideOutHorizontally() },
+                            popEnterTransition = { slideInHorizontally() }
+                        ) {
+                            val viewModel = koinViewModel<RegistrationViewModel>()
+                            RegistrationScreenRoot(viewModel,
+                                onNextClick = {
+                                    navController.navigate(Route.PinScreen)
+                                })
+                        }
+                        composable<Route.PinScreen>(
+                            exitTransition = { slideOutHorizontally() },
+                            popEnterTransition = {
+                                slideInHorizontally()
+                            }
+                        ) {
+                            PINScreenRoot(
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }

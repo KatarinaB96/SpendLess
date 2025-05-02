@@ -1,4 +1,4 @@
-package com.campus.spendless.autentication.presentation
+package com.campus.spendless.autentication.presentation.registration
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -24,8 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,12 +36,36 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.campus.spendless.R
-import com.campus.spendless.ui.theme.OnSurface
+import com.campus.spendless.core.ui.theme.OnSurface
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreenRoot(
+    viewModel: RegistrationViewModel = koinViewModel(),
+    onNextClick: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    RegistrationScreen(state, action = { action ->
+        when (action) {
+            is RegistrationAction.OnNextClicked -> {
+                onNextClick()
+            }
+            else -> Unit
+        }
+        viewModel.onAction(action = action)
+    })
+}
+
+@Composable
+fun RegistrationScreen(
+    state: RegistrationState,
+    action: (RegistrationAction) -> Unit
+) {
     val isEnabled = true
+
+
 
     Column(
         modifier = Modifier
@@ -52,6 +79,7 @@ fun RegistrationScreen() {
         )
 
         Spacer(Modifier.height(20.dp))
+
         Text(
             style = MaterialTheme.typography.headlineMedium,
             text = "Welcome to SpendLess!\n" +
@@ -59,6 +87,7 @@ fun RegistrationScreen() {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
+
         Spacer(Modifier.height(8.dp))
 
         Text(
@@ -67,13 +96,17 @@ fun RegistrationScreen() {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(36.dp))
-        CenteredBasicTextField("Kotlin", {})
+        CenteredBasicTextField(state.username, { name ->
+            action(RegistrationAction.OnUsernameChanged(name))
+        })
 
         Spacer(Modifier.height(16.dp))
 
         FilledTonalButton(
             enabled = isEnabled,
-            onClick = { },
+            onClick = {
+                action(RegistrationAction.OnNextClicked)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
@@ -135,6 +168,7 @@ fun CenteredBasicTextField(
     text: String,
     onValueChange: (String) -> Unit,
 ) {
+    val keyboard = LocalSoftwareKeyboardController.current
     BasicTextField(
         value = text,
         onValueChange = onValueChange,
@@ -143,6 +177,9 @@ fun CenteredBasicTextField(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done,
         ),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboard?.hide()
+        }),
         textStyle = MaterialTheme.typography.displayMedium.copy(
             color = OnSurface,
             textAlign = TextAlign.Center
@@ -175,5 +212,5 @@ fun CenteredBasicTextField(
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFF2)
 fun RegistrationScreenPreview() {
-    RegistrationScreen()
+    RegistrationScreen(state = RegistrationState(), action = {})
 }
